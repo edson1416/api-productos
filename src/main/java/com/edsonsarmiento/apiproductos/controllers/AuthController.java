@@ -1,6 +1,8 @@
 package com.edsonsarmiento.apiproductos.controllers;
 
 import com.edsonsarmiento.apiproductos.entity.Usuarios;
+import com.edsonsarmiento.apiproductos.request.AuthRequest;
+import com.edsonsarmiento.apiproductos.response.AuthResponse;
 import com.edsonsarmiento.apiproductos.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +30,19 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthToken(@RequestBody Usuarios usuario) throws Exception {
+    public ResponseEntity<?> createAuthToken(@RequestBody AuthRequest authRequest) throws Exception {
         try{
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword())
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
 
         }catch (BadCredentialsException e){
             System.out.println(e.getMessage());
             throw new Exception("Invalid username or password", e);
         }
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(usuario.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
         final String token = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }
