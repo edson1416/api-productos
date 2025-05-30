@@ -77,7 +77,7 @@ public class Usuarios implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return username;
     }
 
 

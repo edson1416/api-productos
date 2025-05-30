@@ -4,6 +4,7 @@ import com.edsonsarmiento.apiproductos.request.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +36,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth->auth.requestMatchers("/auth/login").permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/productos").authenticated()
+                        .requestMatchers(HttpMethod.PUT,"/productos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/productos/**").authenticated()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

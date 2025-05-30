@@ -1,7 +1,8 @@
 package com.edsonsarmiento.apiproductos.request;
 
 public class AuthRequest {
-    private String username, password;
+    private String username;
+    private String password;
 
     public String getUsername() {
         return username;
