@@ -6,6 +6,7 @@ import com.edsonsarmiento.apiproductos.services.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProductoController {
         return this.productoService.getProducto(id);
     }
 
+    @PreAuthorize("hasRole('admin')")
     @PostMapping()
     public ProductoDTO createProducto(@Valid @RequestBody ProductoDTO productoDTO) {
         return this.productoService.createProducto(productoDTO);

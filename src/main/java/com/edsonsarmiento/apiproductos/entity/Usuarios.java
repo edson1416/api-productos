@@ -2,10 +2,14 @@ package com.edsonsarmiento.apiproductos.entity;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Usuarios implements UserDetails {
@@ -28,6 +32,14 @@ public class Usuarios implements UserDetails {
 
     @Column
     String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_roles",
+            joinColumns = @JoinColumn(name = "idUsuario"),
+            inverseJoinColumns = @JoinColumn(name = "idRol")
+    )
+    Set<Roles> roles = new HashSet<>();
 
     public int getIdUsuario() {
         return idUsuario;
@@ -65,6 +77,13 @@ public class Usuarios implements UserDetails {
         return password;
     }
 
+    public Set<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Roles> roles) {
+        this.roles = roles;
+    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -72,7 +91,7 @@ public class Usuarios implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_"+role.getNombre())).collect(Collectors.toList());
     }
 
     @Override
